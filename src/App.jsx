@@ -1,58 +1,56 @@
 import "./App.css";
-import { useState, useEffect } from "react";
-import Description from "./components/Description/Description";
-import Feedback from "./components/Feedback/Feedback";
-import Options from "./components/Options/Options";
-import Notification from "./components/Notification/Notification";
+import { fetchImagesWithQuery } from "./services/images-api";
 import Container from "./components/Container/Container";
+import { useEffect, useState } from "react";
+import ImageGallery from "./components/ImageGallery/ImageGallery";
+import SearchBar from "./components/SearchBar/SearchBar";
+import Loader from "./components/Loader/Loader";
+import ErrorMessage from "./components/ErrorMessage/ErrorMessage";
+import LoadMoreBtn from "./components/LoadMoreBtn/LoadMoreBtn";
 
 function App() {
-  const [feedback, setFeedback] = useState(() => {
-    const savedFeedback = window.localStorage.getItem("feedback");
-    if (savedFeedback !== null) {
-      return JSON.parse(savedFeedback);
-    }
-
-    return {
-      good: 0,
-      neutral: 0,
-      bad: 0,
-    };
-  });
+  const [images, setImages] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(false);
+  const [query, setQuery] = useState("");
+  const [page, setPage] = useState(1);
 
   useEffect(() => {
-    window.localStorage.setItem("feedback", JSON.stringify(feedback));
-  }, [feedback]);
+    if (!query) return;
+    const getData = async () => {
+      try {
+        setError(false);
+        setIsLoading(true);
+        const data = await fetchImagesWithQuery(query, page);
+        setImages((prev) => [...prev, ...data]);
+      } catch (error) {
+        setError(true);
+        console.log(error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    getData();
+  }, [query, page]);
 
-  const updateFeedback = (feedbackType) => {
-    setFeedback({ ...feedback, [feedbackType]: feedback[feedbackType] + 1 });
+  const handleSubmit = (newQuery) => {
+    setQuery(newQuery);
+    setImages([]);
+    setPage(1);
   };
 
-  const handleReset = () => {
-    setFeedback({ good: 0, neutral: 0, bad: 0 });
+  const handleClick = () => {
+    setPage(page + 1);
   };
-
-  const totalFeedback = feedback.good + feedback.neutral + feedback.bad;
-  const positiveFeedback = Math.round((feedback.good / totalFeedback) * 100);
 
   return (
     <Container>
-      <Description />
-      <Options
-        updateFeedback={updateFeedback}
-        totalFeedback={totalFeedback}
-        handleReset={handleReset}
-      />
-      {totalFeedback > 0 ? (
-        <Feedback
-          good={feedback.good}
-          neutral={feedback.neutral}
-          bad={feedback.bad}
-          totalFeedback={totalFeedback}
-          positiveFeedback={positiveFeedback}
-        />
-      ) : (
-        <Notification />
+      <SearchBar onSubmit={handleSubmit} />
+      {images.length > 0 && <ImageGallery items={images} />}
+      {isLoading && <Loader />}
+      {error && <ErrorMessage />}
+      {images.length >= 10 && !isLoading && (
+        <LoadMoreBtn handleClick={handleClick} />
       )}
     </Container>
   );
