@@ -1,7 +1,16 @@
-const ImageModal = () => {
-  return (
-    <div>ImageModal</div>
-  )
-}
+import Modal from "react-modal";
+Modal.setAppElement("#root");
 
-export default ImageModal
+const ImageModal = ({ modalIsOpen, closeModal, url }) => {
+  return (
+    <Modal
+      isOpen={modalIsOpen}
+      onRequestClose={closeModal}
+      shouldCloseOnEsc={true}
+    >
+      <img src={url} />
+    </Modal>
+  );
+};
+
+export default ImageModal;

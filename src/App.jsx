@@ -7,6 +7,7 @@ import SearchBar from "./components/SearchBar/SearchBar";
 import Loader from "./components/Loader/Loader";
 import ErrorMessage from "./components/ErrorMessage/ErrorMessage";
 import LoadMoreBtn from "./components/LoadMoreBtn/LoadMoreBtn";
+import ImageModal from "./components/ImageModal/ImageModal";
 
 function App() {
   const [images, setImages] = useState([]);
@@ -15,6 +16,8 @@ function App() {
   const [query, setQuery] = useState("");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
+  const [isOpen, setIsOpen] = useState(false);
+  const [url, setUrl] = useState("");
 
   useEffect(() => {
     if (!query) return;
@@ -44,15 +47,27 @@ function App() {
     setPage(page + 1);
   };
 
+  function openModal(url) {
+    setIsOpen(true);
+    setUrl(url);
+  }
+
+  function closeModal(e) {
+    setIsOpen(false);
+  }
+
   return (
     <Container>
       <SearchBar onSubmit={handleSubmit} />
-      {images.length > 0 && <ImageGallery items={images} />}
+      {images.length > 0 && (
+        <ImageGallery items={images} openModal={openModal} />
+      )}
       {isLoading && <Loader />}
       {error && <ErrorMessage />}
       {page < totalPages && !isLoading && (
         <LoadMoreBtn handleClick={handleClick} />
       )}
+      <ImageModal modalIsOpen={isOpen} closeModal={closeModal} url={url} />
     </Container>
   );
 }
