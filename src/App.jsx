@@ -14,6 +14,7 @@ function App() {
   const [error, setError] = useState(false);
   const [query, setQuery] = useState("");
   const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(0);
 
   useEffect(() => {
     if (!query) return;
@@ -22,10 +23,10 @@ function App() {
         setError(false);
         setIsLoading(true);
         const data = await fetchImagesWithQuery(query, page);
-        setImages((prev) => [...prev, ...data]);
+        setImages((prev) => [...prev, ...data.results]);
+        setTotalPages(data.total_pages);
       } catch (error) {
         setError(true);
-        console.log(error);
       } finally {
         setIsLoading(false);
       }
@@ -49,7 +50,7 @@ function App() {
       {images.length > 0 && <ImageGallery items={images} />}
       {isLoading && <Loader />}
       {error && <ErrorMessage />}
-      {images.length >= 10 && !isLoading && (
+      {page < totalPages && !isLoading && (
         <LoadMoreBtn handleClick={handleClick} />
       )}
     </Container>
