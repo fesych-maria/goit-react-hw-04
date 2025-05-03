@@ -3,10 +3,9 @@ import css from "./SearchBar.module.css";
 
 const SearchBar = ({ onSubmit }) => {
   const warningObj = {
-    duration: 2000,
-    style: { border: "1px solid #713200", padding: "16px", color: "#713200" },
+    duration: 1500,
+    style: { border: "1px solid #322f42", padding: "16px", color: "#322f42" },
     icon: "⚠️",
-    className: "",
   };
 
   const handleSubmit = (evt) => {

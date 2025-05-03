@@ -17,7 +17,7 @@ function App() {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
-  const [url, setUrl] = useState("");
+  const [urlObj, setUrlObj] = useState({});
 
   useEffect(() => {
     if (!query) return;
@@ -47,12 +47,12 @@ function App() {
     setPage(page + 1);
   };
 
-  function openModal(url) {
+  function openModal(urlObj) {
     setIsOpen(true);
-    setUrl(url);
+    setUrlObj(urlObj);
   }
 
-  function closeModal(e) {
+  function closeModal() {
     setIsOpen(false);
   }
 
@@ -67,7 +67,11 @@ function App() {
       {page < totalPages && !isLoading && (
         <LoadMoreBtn handleClick={handleClick} />
       )}
-      <ImageModal modalIsOpen={isOpen} closeModal={closeModal} url={url} />
+      <ImageModal
+        modalIsOpen={isOpen}
+        closeModal={closeModal}
+        urlObj={urlObj}
+      />
     </Container>
   );
 }
