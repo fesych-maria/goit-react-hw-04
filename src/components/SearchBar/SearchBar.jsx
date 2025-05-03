@@ -1,4 +1,5 @@
 import toast from "react-hot-toast";
+import css from "./SearchBar.module.css";
 
 const SearchBar = ({ onSubmit }) => {
   const warningObj = {
@@ -21,8 +22,7 @@ const SearchBar = ({ onSubmit }) => {
   };
 
   return (
-    <header>
-      <div></div>
+    <header className={css.header}>
       <form onSubmit={handleSubmit}>
         <input
           type="text"
